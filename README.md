@@ -11,6 +11,8 @@ pip install -r requirements.txt
 
 - requests
 - bs4
+- lxml
+- pandas
 
 ## Example
 

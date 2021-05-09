@@ -22,16 +22,16 @@ class Summoner:
         res = requests.get(
             "https://na.op.gg/summoner/matches/ajax/averageAndList/", params=params
         )
-        as_json = json.loads(res.content)
+        as_json = json.loads(res.text)
         self.last_info = as_json["lastInfo"]
 
-        soup = BeautifulSoup(as_json["html"], "html.parser")
+        soup = BeautifulSoup(as_json["html"], "lxml")
         return soup
 
     def _load_matches(self):
         # TODO: handle no more matches to load
         match_history = []
-        matches = self.soup.find_all("div", attrs={"class": "GameItem"})
+        matches = self.soup.find_all(class_="GameItem")
         for match in matches:
             game_id = match["data-game-id"]
             summoner_id = match["data-summoner-id"]
