@@ -5,7 +5,8 @@ Easily retrieve op.gg data for use in Python
 ## Requirements
 
 install using
-```
+
+```bash
 pip install -r requirements.txt
 ```
 

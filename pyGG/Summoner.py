@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+from pyGG.Match import Match
+
 
 class Summoner:
     def __init__(self, summoner_id, gamemode="soloranked"):
@@ -52,5 +54,20 @@ class Summoner:
         return match_history
 
     def load_more(self):
+        """
+        Load more items into match_history
+        """
         self._load_data()
         self.match_history += self._load_matches()
+
+    def get_matches(self):
+        """
+        Returns a list of Match objects for all items currently in match_history
+        """
+        match_list = []
+        for match in self.match_history:
+            match_list.append(
+                Match(match["gameId"], match["summonerId"], match["gameTime"])
+            )
+
+        return match_list
