@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 
 from pyGG.Match import Match
+from pyGG.Champions import Champions
 
 
 class Summoner:
@@ -71,3 +72,9 @@ class Summoner:
             )
 
         return match_list
+
+    def get_champions(self, season=17):
+        """
+        Returns Champions object for summoner, optional season paramater
+        """
+        return Champions(self.summoner_id, season)

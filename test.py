@@ -1,6 +1,6 @@
 import unittest
 
-from pyGG import pyGG
+from pyGG import pyGG, Summoner, Match, Champions
 
 
 class TestOpgg(unittest.TestCase):
@@ -11,32 +11,28 @@ class TestOpgg(unittest.TestCase):
         self.match = {"matchId": 3881510735, "gameTime": 1619404792}
 
     def test_get_profile(self):
-        opgg = pyGG.pyGG(self.summoner_name)
-        self.assertIsInstance(opgg.summoner, pyGG.Summoner)
+        opgg = pyGG(self.summoner_name)
+        self.assertIsInstance(opgg.summoner, Summoner)
 
     def test_show_more_matches_success(self):
-        summoner = pyGG.Summoner(self.summoner_id)
+        summoner = Summoner(self.summoner_id)
         summoner.load_more()
         self.assertEqual(len(summoner.match_history), 40)
 
     # def test_show_more_matches_fail(self):
 
     def test_get_match_history(self):
-        summoner = pyGG.Summoner(self.summoner_id)
+        summoner = Summoner(self.summoner_id)
         self.assertEqual(len(summoner.match_history), 20)
 
     # def test_get_full_match_history(self):
 
     def test_get_match_players(self):
-        match = pyGG.Match(
-            self.match["matchId"], self.summoner_id, self.match["gameTime"]
-        )
+        match = Match(self.match["matchId"], self.summoner_id, self.match["gameTime"])
         self.assertEqual(len(match.players), 10)
 
     def test_get_match_summary(self):
-        match = pyGG.Match(
-            self.match["matchId"], self.summoner_id, self.match["gameTime"]
-        )
+        match = Match(self.match["matchId"], self.summoner_id, self.match["gameTime"])
         self.assertDictEqual(
             match.summary,
             {
@@ -62,6 +58,10 @@ class TestOpgg(unittest.TestCase):
     #     summoner = pyGG.Summoner(self.summoner_id)
     #     match_list = summoner.get_matches()
     #     self.assertIsInstance(match_list[0], pyGG.Match)
+
+    def test_get_champions(self):
+        champions = Champions(self.summoner_id).json
+        self.assertEqual(champions["Vayne"]["Penta Kill"], 1)
 
 
 if __name__ == "__main__":
