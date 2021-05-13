@@ -10,14 +10,14 @@ class Summoner:
     def __init__(self, summoner_id, gamemode="soloranked"):
         self.summoner_id = summoner_id
         self.gamemode = gamemode
-        self.last_info = 0
+        self._last_info = 0
 
         self.soup = self._load_data()
         self.match_history = self._load_matches()
 
     def _load_data(self):
         params = {
-            "startInfo": self.last_info,
+            "startInfo": self._last_info,
             "summonerId": self.summoner_id,
             "type": self.gamemode,
         }

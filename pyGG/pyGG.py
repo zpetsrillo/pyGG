@@ -16,8 +16,6 @@ class pyGG:
             self.soup = self._load_data(self.summoner_name)
             self.summoner_id = self._get_summoner_id()
 
-        self.summoner = Summoner(self.summoner_id)
-
     def _load_data(self, summoner_name):
         params = {"userName": self.summoner_name}
         res = requests.get(f"https://na.op.gg/summoner/", params=params)
@@ -28,3 +26,6 @@ class pyGG:
         game_list = self.soup.find(class_="GameListContainer")
         summoner_id = game_list["data-summoner-id"]
         return summoner_id
+
+    def get_summoner(self):
+        return Summoner(self.summoner_id)

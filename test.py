@@ -1,6 +1,6 @@
 import unittest
 
-from pyGG import pyGG, Summoner, Match, Champions
+from pyGG import pyGG, Summoner, Match, Champions, Leaderboard
 
 
 class TestOpgg(unittest.TestCase):
@@ -10,9 +10,9 @@ class TestOpgg(unittest.TestCase):
 
         self.match = {"matchId": 3881510735, "gameTime": 1619404792}
 
-    def test_get_profile(self):
+    def test_get_summoner(self):
         opgg = pyGG(self.summoner_name)
-        self.assertIsInstance(opgg.summoner, Summoner)
+        self.assertIsInstance(opgg.get_summoner(), Summoner)
 
     def test_show_more_matches_success(self):
         summoner = Summoner(self.summoner_id)
@@ -62,6 +62,10 @@ class TestOpgg(unittest.TestCase):
     def test_get_champions(self):
         champions = Champions(self.summoner_id).json
         self.assertEqual(champions["Vayne"]["Penta Kill"], 1)
+
+    def test_leaderboard(self):
+        lb = Leaderboard()
+        self.assertEqual(len(lb.json), 100)
 
 
 if __name__ == "__main__":
