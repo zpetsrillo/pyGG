@@ -12,8 +12,7 @@ class Match:
 
         self.soup = self._load_data()
 
-        self.players = self._get_players()
-        self.summary = self._get_summary()
+        self.json = {"summary": self._get_summary(), "players": self._get_players()}
 
     def _load_data(self):
         params = {

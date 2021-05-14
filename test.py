@@ -1,6 +1,6 @@
 import unittest
 
-from pyGG import pyGG, Summoner, Match, Champions, Leaderboard
+from pyGG import Summoner, MatchHistory, Match, Champions, Leaderboard, Statistics
 
 
 class TestOpgg(unittest.TestCase):
@@ -11,30 +11,30 @@ class TestOpgg(unittest.TestCase):
         self.match = {"matchId": 3881510735, "gameTime": 1619404792}
 
     def test_get_summoner(self):
-        opgg = pyGG(self.summoner_name)
-        self.assertIsInstance(opgg.get_summoner(), Summoner)
+        opgg = Summoner(self.summoner_name)
+        self.assertIsInstance(opgg.get_match_history(), MatchHistory)
 
     def test_show_more_matches_success(self):
-        summoner = Summoner(self.summoner_id)
-        summoner.load_more()
-        self.assertEqual(len(summoner.match_history), 40)
+        mh = MatchHistory(self.summoner_id)
+        mh.load_more()
+        self.assertEqual(len(mh.json), 40)
 
     # def test_show_more_matches_fail(self):
 
     def test_get_match_history(self):
-        summoner = Summoner(self.summoner_id)
-        self.assertEqual(len(summoner.match_history), 20)
+        mh = MatchHistory(self.summoner_id)
+        self.assertEqual(len(mh.json), 20)
 
     # def test_get_full_match_history(self):
 
     def test_get_match_players(self):
         match = Match(self.match["matchId"], self.summoner_id, self.match["gameTime"])
-        self.assertEqual(len(match.players), 10)
+        self.assertEqual(len(match.json["players"]), 10)
 
     def test_get_match_summary(self):
         match = Match(self.match["matchId"], self.summoner_id, self.match["gameTime"])
         self.assertDictEqual(
-            match.summary,
+            match.json["summary"],
             {
                 "win-team": {
                     "Baron": 1,
@@ -66,6 +66,10 @@ class TestOpgg(unittest.TestCase):
     def test_leaderboard(self):
         lb = Leaderboard()
         self.assertEqual(len(lb.json), 100)
+
+    def test_statistics(self):
+        stats = Statistics()
+        self.assertGreaterEqual(len(stats.json), 155)
 
 
 if __name__ == "__main__":

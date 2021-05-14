@@ -6,8 +6,8 @@ Easily retrieve op.gg data for use in Python
 
 install using
 
-```bash
-pip install -r requirements.txt
+```shell
+python3 -m pip install -r requirements.txt
 ```
 
 - requests
@@ -18,20 +18,22 @@ pip install -r requirements.txt
 ## Example
 
 ```python
-from pyGG import pyGG
+from pyGG import Summoner
 
-opgg = pyGG('dharana')
-summoner = opgg.get_summoner()
-print(summoner.match_history)
+opgg = Summoner('dharana')
+match_history = opgg.get_match_history()
+print(match_history.json)
 ```
 
 ## Classes
 
-### pyGG
+### Summoner
 
 Profile page
 
-`pyGG(summoner_name, summoner_id?)`
+```python
+Summoner(summoner_name, summoner_id?)
+```
 
 if not called with summoner_id, it will be fetched on instantiation
 
@@ -40,17 +42,20 @@ if not called with summoner_id, it will be fetched on instantiation
 | summoner_name | plain text summoner name    |
 | summoner_id   | summoner id as used by opgg |
 
-### Summoner
+### MatchHistory
 
 Match history of summoner
 
-`Summoner(summoner_id, gamemode='Ranked Solo')`
+```python
+MatchHistory(summoner_id, gamemode='Ranked Solo')
+```
 
-| Attribute     | Contents                          |
-| ------------- | --------------------------------- |
-| summoner_id   | summoner id as used by opgg       |
-| gamemode      | gamemode filter for match history |
-| match_history | header items for match history    |
+| Attribute   | Contents                               |
+| ----------- | -------------------------------------- |
+| summoner_id | summoner id as used by opgg            |
+| gamemode    | gamemode filter for match history      |
+| json        | json of header items for match history |
+| df          | df of header items for match history   |
 
 | Method          | Contents                                            |
 | --------------- | --------------------------------------------------- |
@@ -62,7 +67,9 @@ Match history of summoner
 
 Individual match
 
-`Match(game_id, summoner_id, game_time)`
+```python
+Match(game_id, summoner_id, game_time)
+```
 
 | Attribute   | Contents                                         |
 | ----------- | ------------------------------------------------ |
@@ -76,25 +83,89 @@ Individual match
 
 Full champion stats of summoner for a season
 
-`Champions(summoner_id, season=17)`
+```python
+Champions(summoner_id, season=17)
+```
 
 | Attribute   | Contents                                   |
 | ----------- | ------------------------------------------ |
 | summoner_id | summoner id as used by opgg                |
-| df          | DataFrame representation of champion stats |
 | json        | json representation of champion stats      |
+| df          | DataFrame representation of champion stats |
 
 ### Leaderboard
 
 Top ranked summoners in Ranked Solo gamemode
 
-`Leaderboard(page=1)`
+```python
+Leaderboard(page=1)
+```
 
 | Attribute | Contents                          |
 | --------- | --------------------------------- |
 | json      | json represenation of leaderboard |
+| df        | df represenation of leaderboard   |
 
-| Method              | Contents                                  |
-| ------------------- | ----------------------------------------- |
-| next_page()         | load next page of the leaderboard         |
-| load_page(page:int) | load given page number of the leaderboard |
+| Method               | Contents                                  |
+| -------------------- | ----------------------------------------- |
+| next_page()          | load next page of the leaderboard         |
+| load_page(page: int) | load given page number of the leaderboard |
+
+### Statistics
+
+Playerbase statistics for all champions
+
+```python
+form = {
+    'type': 'win',
+    'league': 'challenger',
+    'period': 'month',
+    'mapId': 1,
+    'queue': 'ranked'
+}
+
+Statistics(form)
+```
+
+#### Form Options
+
+type
+
+- win
+- lose
+- picked
+- banned
+
+league
+
+- EMPTY STRING (All leagues)
+- iron
+- bronze
+- silver
+- gold
+- platinum
+- diamond
+- master
+- grandmaster
+- challenger
+
+period
+
+- month
+- week
+- today
+
+mapId
+
+- 1 (Summoners Rift)
+- 12 (Howling Abyss)
+
+queue
+
+- ranked
+- aram
+
+| Attribute | Contents                         |
+| --------- | -------------------------------- |
+| json      | json represenation of statistics |
+| df        | df represenation of statistics   |

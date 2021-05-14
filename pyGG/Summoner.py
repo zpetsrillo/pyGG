@@ -1,80 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
-import json
 
+from pyGG.MatchHistory import MatchHistory
 from pyGG.Match import Match
-from pyGG.Champions import Champions
 
 
 class Summoner:
-    def __init__(self, summoner_id, gamemode="soloranked"):
-        self.summoner_id = summoner_id
-        self.gamemode = gamemode
-        self._last_info = 0
+    def __init__(self, summoner_name=None, summoner_id=None):
+        self.summoner_name = summoner_name
 
-        self.soup = self._load_data()
-        self.match_history = self._load_matches()
+        if summoner_id is not None:
+            self.summoner_id = summoner_id
 
-    def _load_data(self):
-        params = {
-            "startInfo": self._last_info,
-            "summonerId": self.summoner_id,
-            "type": self.gamemode,
-        }
+        if summoner_name is not None:
+            self.soup = self._load_data(self.summoner_name)
+            self.summoner_id = self._get_summoner_id()
 
-        res = requests.get(
-            "https://na.op.gg/summoner/matches/ajax/averageAndList/", params=params
-        )
-        as_json = json.loads(res.text)
-        self.last_info = as_json["lastInfo"]
-
-        soup = BeautifulSoup(as_json["html"], "lxml")
+    def _load_data(self, summoner_name):
+        params = {"userName": self.summoner_name}
+        res = requests.get(f"https://na.op.gg/summoner/", params=params)
+        soup = BeautifulSoup(res.text, "lxml")
         return soup
 
-    def _load_matches(self):
-        # TODO: handle no more matches to load
-        match_history = []
-        matches = self.soup.find_all(class_="GameItem")
-        for match in matches:
-            game_id = match["data-game-id"]
-            summoner_id = match["data-summoner-id"]
-            game_time = match["data-game-time"]
-            game_result = match["data-game-result"]
+    def _get_summoner_id(self):
+        game_list = self.soup.find(class_="GameListContainer")
+        summoner_id = game_list["data-summoner-id"]
+        return summoner_id
 
-            # TODO: Add all readily available match data to output
-
-            match_history.append(
-                {
-                    "gameId": game_id,
-                    "summonerId": summoner_id,
-                    "gameTime": game_time,
-                    "result": game_result,
-                }
-            )
-
-        return match_history
-
-    def load_more(self):
-        """
-        Load more items into match_history
-        """
-        self._load_data()
-        self.match_history += self._load_matches()
-
-    def get_matches(self):
-        """
-        Returns a list of Match objects for all items currently in match_history
-        """
-        match_list = []
-        for match in self.match_history:
-            match_list.append(
-                Match(match["gameId"], match["summonerId"], match["gameTime"])
-            )
-
-        return match_list
-
-    def get_champions(self, season=17):
-        """
-        Returns Champions object for summoner, optional season paramater
-        """
-        return Champions(self.summoner_id, season)
+    def get_match_history(self):
+        return MatchHistory(self.summoner_id)
