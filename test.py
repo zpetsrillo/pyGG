@@ -71,6 +71,37 @@ class TestOpgg(unittest.TestCase):
         stats = Statistics()
         self.assertGreaterEqual(len(stats.json), 155)
 
+    def test_get_summoner_rank(self):
+        opgg = Summoner(self.summoner_name)
+        rank_info = opgg._get_rank()
+        self.assertDictEqual(
+            rank_info,
+            {
+                "type": "Ranked Solo",
+                "tier": "Platinum 1",
+                "lp": 75,
+                "win": 158,
+                "lose": 150,
+                "winratio": 51,
+                "league": "Twitch's Marauders",
+            },
+        )
+
+    def test_get_summoner_sub_rank(self):
+        opgg = Summoner(self.summoner_name)
+        rank_info = opgg._get_sub_rank()
+        self.assertDictEqual(
+            rank_info,
+            {
+                "type": "Flex 5:5 Rank",
+                "tier": "Gold 1",
+                "lp": 79,
+                "win": 8,
+                "lose": 10,
+                "winratio": 44,
+            },
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
