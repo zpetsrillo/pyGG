@@ -2,6 +2,14 @@
 
 Easily retrieve op.gg data for use in Python
 
+## Install
+
+You can install as pip package with the setup.py file by using this command from the main directory.
+
+```shell
+pip install .
+```
+
 ## Requirements
 
 install using
@@ -32,15 +40,15 @@ print(match_history.json)
 Profile page
 
 ```python
-Summoner(summoner_name, summoner_id?)
+Summoner(summoner_name)
 ```
 
 if not called with summoner_id, it will be fetched on instantiation
 
-| Attribute     | Contents                    |
-| ------------- | --------------------------- |
-| summoner_name | plain text summoner name    |
-| summoner_id   | summoner id as used by opgg |
+| Attribute     | Contents                                      |
+| ------------- | --------------------------------------------- |
+| summoner_name | plain text summoner name                      |
+| json          | json representaion of summoner's profile page |
 
 ### MatchHistory
 

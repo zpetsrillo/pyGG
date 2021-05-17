@@ -77,11 +77,23 @@ class Summoner:
 
         return past_rank
 
+    def _get_level(self):
+        level = self.soup.find(class_="Level").text.strip()
+
+        return int(level)
+
+    def _get_ladder_rank(self):
+        ranking = self.soup.find(class_="ranking").text.strip().replace(",", "")
+
+        return int(ranking)
+
     def _as_json(self):
         return {
             "summoner-id": self._get_summoner_id(),
-            "rank": self._get_rank(),
-            "subrank": self._get_sub_rank(),
+            "level": self._get_level(),
+            "ladder-rank": self._get_ladder_rank(),
+            "rank-solo": self._get_rank(),
+            "rank-flex": self._get_sub_rank(),
             "past-rank": self._get_past_rank(),
         }
 

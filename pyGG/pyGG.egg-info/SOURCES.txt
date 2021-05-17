@@ -1,0 +1,6 @@
+README.md
+setup.py
+pyGG/pyGG.egg-info/PKG-INFO
+pyGG/pyGG.egg-info/SOURCES.txt
+pyGG/pyGG.egg-info/dependency_links.txt
+pyGG/pyGG.egg-info/top_level.txt
