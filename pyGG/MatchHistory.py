@@ -11,15 +11,15 @@ class MatchHistory:
     def __init__(self, summoner_id, gamemode="soloranked"):
         self.summoner_id = summoner_id
         self.gamemode = gamemode
-        self._last_info = 0
+        self.__last_info = 0
 
-        self.soup = self._load_data()
-        self.json = self._load_matches()
-        self.df = self._to_df()
+        self.soup = self.__load_data()
+        self.json = self.__load_matches()
+        self.df = self.__to_df()
 
-    def _load_data(self):
+    def __load_data(self):
         params = {
-            "startInfo": self._last_info,
+            "startInfo": self.__last_info,
             "summonerId": self.summoner_id,
             "type": self.gamemode,
         }
@@ -33,7 +33,7 @@ class MatchHistory:
         soup = BeautifulSoup(as_json["html"], "lxml")
         return soup
 
-    def _load_matches(self):
+    def __load_matches(self):
         # TODO: handle no more matches to load
         match_history = []
         matches = self.soup.find_all(class_="GameItem")
@@ -56,7 +56,7 @@ class MatchHistory:
 
         return match_history
 
-    def _to_df(self):
+    def __to_df(self):
         columns = ["gameId", "summonerId", "gameTime", "result"]
         df = pd.DataFrame(self.json, columns=columns)
         df["gameTime"] = pd.to_datetime(df["gameTime"], unit="s")
@@ -66,8 +66,8 @@ class MatchHistory:
         """
         Load more items into match_history
         """
-        self._load_data()
-        self.json += self._load_matches()
+        self.__load_data()
+        self.json += self.__load_matches()
 
     def get_matches(self):
         """

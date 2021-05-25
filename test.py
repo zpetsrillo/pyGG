@@ -73,7 +73,7 @@ class TestOpgg(unittest.TestCase):
 
     def test_get_summoner_rank(self):
         opgg = Summoner(self.summoner_name)
-        rank_info = opgg._get_rank()
+        rank_info = opgg.json["rank-solo"]
         self.assertDictEqual(
             rank_info,
             {
@@ -89,7 +89,7 @@ class TestOpgg(unittest.TestCase):
 
     def test_get_summoner_sub_rank(self):
         opgg = Summoner(self.summoner_name)
-        rank_info = opgg._get_sub_rank()
+        rank_info = opgg.json["rank-flex"]
         self.assertDictEqual(
             rank_info,
             {

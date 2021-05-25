@@ -7,18 +7,18 @@ import re
 class Leaderboard:
     def __init__(self, page=1):
         self.page = page
-        self.soup = self._load_leaderboard()
-        self.json = self._clean_leaderboard()
-        self.df = self._to_df()
+        self.soup = self.__load_leaderboard()
+        self.json = self.__clean_leaderboard()
+        self.df = self.__to_df()
 
-    def _load_leaderboard(self):
+    def __load_leaderboard(self):
         params = {"page": self.page}
 
         res = requests.get("https://na.op.gg/ranking/ladder/", params=params)
         soup = BeautifulSoup(res.text, "lxml")
         return soup
 
-    def _clean_leaderboard_rows(self, rows):
+    def __clean_leaderboard_rows(self, rows):
         output = []
         for row in rows:
             summoner_id = re.search(r"summoner-(\d+)", row["id"])[1]
@@ -51,7 +51,7 @@ class Leaderboard:
 
         return output
 
-    def _clean_leaderboard_rows_highest(self, rows):
+    def __clean_leaderboard_rows_highest(self, rows):
         output = []
         for row in rows:
             summoner_id = re.search(r"summoner-(\d+)", row["id"])[1]
@@ -84,19 +84,19 @@ class Leaderboard:
 
         return output
 
-    def _clean_leaderboard(self):
+    def __clean_leaderboard(self):
         output = []
 
         if self.page == 1:
             ranking_highest = self.soup.find_all("li", class_="ranking-highest__item")
-            output += self._clean_leaderboard_rows_highest(ranking_highest)
+            output += self.__clean_leaderboard_rows_highest(ranking_highest)
 
         rows = self.soup.find_all("tr", class_="ranking-table__row")
-        output += self._clean_leaderboard_rows(rows)
+        output += self.__clean_leaderboard_rows(rows)
 
         return output
 
-    def _to_df(self):
+    def __to_df(self):
         return pd.DataFrame(self.json).set_index("rank")
 
     def load_page(self, page):
@@ -104,9 +104,9 @@ class Leaderboard:
         Load leadboard for given page (100 summoners per page)
         """
         self.page = page
-        self.soup = self._load_leaderboard()
-        self.json = self._clean_leaderboard()
-        self.df = self._to_df()
+        self.soup = self.__load_leaderboard()
+        self.json = self.__clean_leaderboard()
+        self.df = self.__to_df()
 
     def next_page(self):
         """

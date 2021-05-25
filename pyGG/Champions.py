@@ -6,20 +6,20 @@ import re
 class Champions:
     def __init__(self, summoner_id, season=17):
         self.summoner_id = summoner_id
-        self.df = self._load_champions(season)
+        self.df = self.__load_champions(season)
         self.json = self.df.T.to_dict()
 
-    def _load_champions(self, season):
+    def __load_champions(self, season):
         params = {"summonerId": self.summoner_id, "season": season}
 
         res = requests.get(
             "https://na.op.gg/summoner/champions/ajax/champions.rank/", params=params
         )
         df = pd.read_html(res.text)[0]
-        df = self._clean_champions_table(df)
+        df = self.__clean_champions_table(df)
         return df
 
-    def _clean_champions_table(self, df):
+    def __clean_champions_table(self, df):
         def win_lose_helper(x):
             if x is not None:
                 return int(x[1])

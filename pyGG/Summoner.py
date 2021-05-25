@@ -9,21 +9,21 @@ class Summoner:
     def __init__(self, summoner_name):
         self.summoner_name = summoner_name
 
-        self.soup = self._load_data(self.summoner_name)
-        self.json = self._as_json()
+        self.soup = self.__load_data(self.summoner_name)
+        self.json = self.__as_json()
 
-    def _load_data(self, summoner_name):
+    def __load_data(self, summoner_name):
         params = {"userName": self.summoner_name}
         res = requests.get(f"https://na.op.gg/summoner/", params=params)
         soup = BeautifulSoup(res.text, "lxml")
         return soup
 
-    def _get_summoner_id(self):
+    def __get_summoner_id(self):
         game_list = self.soup.find(class_="GameListContainer")
         summoner_id = game_list["data-summoner-id"]
         return summoner_id
 
-    def _get_rank(self):
+    def __get_rank(self):
         rank_info = self.soup.find(class_="TierRankInfo")
         rank_type = rank_info.find(class_="RankType").text
         rank_tier = rank_info.find(class_="TierRank").text
@@ -43,7 +43,7 @@ class Summoner:
             "league": rank_league,
         }
 
-    def _get_sub_rank(self):
+    def __get_sub_rank(self):
         rank_info = self.soup.find(class_="sub-tier__info")
         rank_type = rank_info.find(class_="sub-tier__rank-type").text
         rank_tier = rank_info.find(class_="sub-tier__rank-tier").text.strip()
@@ -66,7 +66,7 @@ class Summoner:
             "winratio": int(rank_winratio),
         }
 
-    def _get_past_rank(self):
+    def __get_past_rank(self):
         past_rank_list = self.soup.find(class_="PastRankList")
         past_rank_items = past_rank_list.find_all(class_="Item tip")
 
@@ -77,24 +77,24 @@ class Summoner:
 
         return past_rank
 
-    def _get_level(self):
+    def __get_level(self):
         level = self.soup.find(class_="Level").text.strip()
 
         return int(level)
 
-    def _get_ladder_rank(self):
+    def __get_ladder_rank(self):
         ranking = self.soup.find(class_="ranking").text.strip().replace(",", "")
 
         return int(ranking)
 
-    def _as_json(self):
+    def __as_json(self):
         return {
-            "summoner-id": self._get_summoner_id(),
-            "level": self._get_level(),
-            "ladder-rank": self._get_ladder_rank(),
-            "rank-solo": self._get_rank(),
-            "rank-flex": self._get_sub_rank(),
-            "past-rank": self._get_past_rank(),
+            "summoner-id": self.__get_summoner_id(),
+            "level": self.__get_level(),
+            "ladder-rank": self.__get_ladder_rank(),
+            "rank-solo": self.__get_rank(),
+            "rank-flex": self.__get_sub_rank(),
+            "past-rank": self.__get_past_rank(),
         }
 
     def get_match_history(self):

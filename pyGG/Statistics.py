@@ -5,11 +5,11 @@ from bs4 import BeautifulSoup
 
 class Statistics:
     def __init__(self, form=None):
-        self.soup = self._load_data(form)
-        self.df = self._clean_data()
+        self.soup = self.__load_data(form)
+        self.df = self.__clean_data()
         self.json = self.df.set_index("Champion").T.to_dict()
 
-    def _load_data(self, form):
+    def __load_data(self, form):
 
         if form == None:
             form = {
@@ -24,7 +24,7 @@ class Statistics:
         soup = BeautifulSoup(res.text, "lxml")
         return soup
 
-    def _clean_data(self):
+    def __clean_data(self):
         df = pd.read_html(str(self.soup))[0]
         df.drop(columns=["Champion"], inplace=True)
         df.rename(columns={"Champion.1": "Champion"}, inplace=True)
