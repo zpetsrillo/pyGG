@@ -55,8 +55,19 @@ if not called with summoner_id, it will be fetched on instantiation
 Match history of summoner
 
 ```python
-MatchHistory(summoner_id, gamemode='Ranked Solo')
+MatchHistory(summoner_id, gamemode='soloranked')
 ```
+
+gamemode
+
+- soloranked
+- flexranked
+- normal
+- aram
+- bot
+- clash
+- event
+- total
 
 | Attribute   | Contents                               |
 | ----------- | -------------------------------------- |

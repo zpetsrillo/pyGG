@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import json
 
 
 class Match:
@@ -10,9 +11,16 @@ class Match:
         self.summoner_id = summoner_id
         self.game_time = game_time
 
-        self.soup = self.__load_data()
+        self.__soup = self.__load_data()
+        self.__json = self.__load_json()
 
-        self.json = {"summary": self.__get_summary(), "players": self.__get_players()}
+    @property
+    def soup(self):
+        return self.__soup
+
+    @property
+    def json(self):
+        return self.__json
 
     def __load_data(self):
         params = {
@@ -41,8 +49,8 @@ class Match:
 
     def __get_tables(self):
         # TODO: clean tables
-        win_df = pd.read_html(str(self.soup.find("table", class_="Result-WIN")))[0]
-        lose_df = pd.read_html(str(self.soup.find("table", class_="Result-LOSE")))[0]
+        win_df = pd.read_html(str(self.__soup.find("table", class_="Result-WIN")))[0]
+        lose_df = pd.read_html(str(self.__soup.find("table", class_="Result-LOSE")))[0]
         return win_df, lose_df
 
     def __clean_table(self, df):
@@ -120,7 +128,7 @@ class Match:
         return dict(zip(keys, values))
 
     def __get_summary(self):
-        summary = self.soup.find(class_="Summary")
+        summary = self.__soup.find(class_="Summary")
         win_team = self.__extract_team_info(summary.find(class_="Team-200"))
         lose_team = self.__extract_team_info(summary.find(class_="Team-100"))
         win_kills, lose_kills, win_gold, lose_gold = self._extract_summary_info(summary)
@@ -131,3 +139,12 @@ class Match:
         lose_team["Gold"] = lose_gold
 
         return {"win-team": win_team, "lose-team": lose_team}
+
+    def __load_json(self):
+        return {"summary": self.__get_summary(), "players": self.__get_players()}
+
+    def __str__(self):
+        return json.dumps(self.__json, indent=4)
+
+    def __repr__(self):
+        return json.dumps(self.__json, indent=4)

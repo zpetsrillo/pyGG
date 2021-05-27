@@ -1,13 +1,35 @@
 import pandas as pd
 import requests
 import re
+import json
 
 
 class Champions:
     def __init__(self, summoner_id, season=17):
         self.summoner_id = summoner_id
-        self.df = self.__load_champions(season)
-        self.json = self.df.T.to_dict()
+        self.__season = season
+        self.__df = self.__load_df()
+        self.__json = self.__load_json()
+
+    @property
+    def json(self):
+        return self.__json
+
+    @property
+    def df(self):
+        return self.__df
+
+    @property
+    def season(self):
+        return self.__season
+
+    @season.setter
+    def season(self, value):
+        if type(value) != int:
+            raise ValueError("Page must be type integer")
+        if value < 0:
+            raise ValueError("Page must be non-negative")
+        self.__season = value
 
     def __load_champions(self, season):
         params = {"summonerId": self.summoner_id, "season": season}
@@ -45,3 +67,15 @@ class Champions:
         df.set_index("Champion", inplace=True)
 
         return df.apply(pd.to_numeric)
+
+    def __load_json(self):
+        return self.__df.T.to_dict()
+
+    def __load_df(self):
+        return self.__load_champions(self.season)
+
+    def __str__(self):
+        return json.dumps(self.__json, indent=4)
+
+    def __repr__(self):
+        return json.dumps(self.__json, indent=4)
