@@ -6,7 +6,18 @@ import json
 
 class Statistics:
     def __init__(self, form=None):
-        self.__soup = self.__load_data(form)
+        if form is None:
+            self.__form = {
+                "type": "win",
+                "league": "",
+                "period": "month",
+                "mapId": 1,
+                "queue": "ranked",
+            }
+        else:
+            self.__form = form
+
+        self.__soup = self.__load_data(self.__form)
         self.__df = self.__load_df()
         self.__json = self.__load_json()
 
@@ -38,7 +49,7 @@ class Statistics:
         return soup
 
     def __clean_data(self):
-        df = pd.read_html(str(self.__soup))[0]
+        df = pd.read_html(str(self.soup))[0]
         df.drop(columns=["Champion"], inplace=True)
         df.rename(columns={"Champion.1": "Champion"}, inplace=True)
         df["Win rate"] = df["Win rate"].map(lambda x: float(x[:-1]))
@@ -47,13 +58,10 @@ class Statistics:
         return df
 
     def __load_json(self):
-        return self.__df.set_index("Champion").T.to_dict()
+        return self.df.set_index("Champion").T.to_dict()
 
     def __load_df(self):
         return self.__clean_data()
 
     def __str__(self):
-        return json.dumps(self.__json, indent=4)
-
-    def __repr__(self):
-        return json.dumps(self.__json, indent=4)
+        return json.dumps(self.json, indent=4)

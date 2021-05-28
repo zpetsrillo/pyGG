@@ -28,12 +28,12 @@ class Summoner:
         return soup
 
     def __get_summoner_id(self):
-        game_list = self.__soup.find(class_="GameListContainer")
+        game_list = self.soup.find(class_="GameListContainer")
         summoner_id = game_list["data-summoner-id"]
         return summoner_id
 
     def __get_rank(self):
-        rank_info = self.__soup.find(class_="TierRankInfo")
+        rank_info = self.soup.find(class_="TierRankInfo")
         rank_type = rank_info.find(class_="RankType").text
         rank_tier = rank_info.find(class_="TierRank").text
         rank_lp = rank_info.find(class_="LeaguePoints").text.split()[0]
@@ -53,7 +53,7 @@ class Summoner:
         }
 
     def __get_sub_rank(self):
-        rank_info = self.__soup.find(class_="sub-tier__info")
+        rank_info = self.soup.find(class_="sub-tier__info")
         rank_type = rank_info.find(class_="sub-tier__rank-type").text
         rank_tier = rank_info.find(class_="sub-tier__rank-tier").text.strip()
         rank_lp, rank_win, rank_lose = rank_info.find(
@@ -76,7 +76,7 @@ class Summoner:
         }
 
     def __get_past_rank(self):
-        past_rank_list = self.__soup.find(class_="PastRankList")
+        past_rank_list = self.soup.find(class_="PastRankList")
         past_rank_items = past_rank_list.find_all(class_="Item tip")
 
         past_leagues = [rank for rank in past_rank_list.text.split("\n") if rank != ""]
@@ -87,12 +87,12 @@ class Summoner:
         return past_rank
 
     def __get_level(self):
-        level = self.__soup.find(class_="Level").text.strip()
+        level = self.soup.find(class_="Level").text.strip()
 
         return int(level)
 
     def __get_ladder_rank(self):
-        ranking = self.__soup.find(class_="ranking").text.strip().replace(",", "")
+        ranking = self.soup.find(class_="ranking").text.strip().replace(",", "")
 
         return int(ranking)
 
@@ -107,10 +107,10 @@ class Summoner:
         }
 
     def get_match_history(self):
-        return MatchHistory(self.__json["summoner-id"])
+        return MatchHistory(self.json["summoner-id"])
 
     def __str__(self):
-        return json.dumps(self.__json, indent=4)
+        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
-        return json.dumps(self.__json, indent=4)
+        return f'Summoner - {self.json["summoner-id"]}'

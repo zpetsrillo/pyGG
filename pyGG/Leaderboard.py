@@ -113,10 +113,10 @@ class Leaderboard:
         output = []
 
         if self.page == 1:
-            ranking_highest = self.__soup.find_all("li", class_="ranking-highest__item")
+            ranking_highest = self.soup.find_all("li", class_="ranking-highest__item")
             output += self.__clean_leaderboard_rows_highest(ranking_highest)
 
-        rows = self.__soup.find_all("tr", class_="ranking-table__row")
+        rows = self.soup.find_all("tr", class_="ranking-table__row")
         output += self.__clean_leaderboard_rows(rows)
 
         return output
@@ -125,7 +125,7 @@ class Leaderboard:
         return self.__clean_leaderboard()
 
     def __load_df(self):
-        return pd.DataFrame(self.__json).set_index("rank")
+        return pd.DataFrame(self.json).set_index("rank")
 
     def load_page(self, page):
         """
@@ -140,7 +140,4 @@ class Leaderboard:
         self.load_page(self.page + 1)
 
     def __str__(self):
-        return json.dumps(self.__json, indent=4)
-
-    def __repr__(self):
-        return json.dumps(self.__json, indent=4)
+        return json.dumps(self.json, indent=4)

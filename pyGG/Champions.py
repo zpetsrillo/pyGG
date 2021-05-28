@@ -69,13 +69,13 @@ class Champions:
         return df.apply(pd.to_numeric)
 
     def __load_json(self):
-        return self.__df.T.to_dict()
+        return self.df.T.to_dict()
 
     def __load_df(self):
         return self.__load_champions(self.season)
 
     def __str__(self):
-        return json.dumps(self.__json, indent=4)
+        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
-        return json.dumps(self.__json, indent=4)
+        return f"Champions - {self.summoner_id} - {self.season}"

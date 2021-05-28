@@ -49,8 +49,8 @@ class Match:
 
     def __get_tables(self):
         # TODO: clean tables
-        win_df = pd.read_html(str(self.__soup.find("table", class_="Result-WIN")))[0]
-        lose_df = pd.read_html(str(self.__soup.find("table", class_="Result-LOSE")))[0]
+        win_df = pd.read_html(str(self.soup.find("table", class_="Result-WIN")))[0]
+        lose_df = pd.read_html(str(self.soup.find("table", class_="Result-LOSE")))[0]
         return win_df, lose_df
 
     def __clean_table(self, df):
@@ -104,7 +104,7 @@ class Match:
 
         return df[columns].set_index("Summoner Name")
 
-    def _extract_summary_info(self, summary):
+    def __extract_summary_info(self, summary):
         win_team = summary.find_all(class_="graph win--team")
         lose_team = summary.find_all(class_="graph lose--team")
 
@@ -128,10 +128,12 @@ class Match:
         return dict(zip(keys, values))
 
     def __get_summary(self):
-        summary = self.__soup.find(class_="Summary")
+        summary = self.soup.find(class_="Summary")
         win_team = self.__extract_team_info(summary.find(class_="Team-200"))
         lose_team = self.__extract_team_info(summary.find(class_="Team-100"))
-        win_kills, lose_kills, win_gold, lose_gold = self._extract_summary_info(summary)
+        win_kills, lose_kills, win_gold, lose_gold = self.__extract_summary_info(
+            summary
+        )
 
         win_team["Kills"] = win_kills
         lose_team["Kills"] = lose_kills
@@ -144,7 +146,7 @@ class Match:
         return {"summary": self.__get_summary(), "players": self.__get_players()}
 
     def __str__(self):
-        return json.dumps(self.__json, indent=4)
+        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
-        return json.dumps(self.__json, indent=4)
+        return f"Match - {self.game_id}"

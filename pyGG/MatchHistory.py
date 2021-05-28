@@ -70,7 +70,7 @@ class MatchHistory:
     def __load_matches(self):
         # TODO: handle no more matches to load
         match_history = []
-        matches = self.__soup.find_all(class_="GameItem")
+        matches = self.soup.find_all(class_="GameItem")
         for match in matches:
             game_id = match["data-game-id"]
             summoner_id = match["data-summoner-id"]
@@ -111,7 +111,7 @@ class MatchHistory:
         Returns a list of Match objects for all items currently in match_history
         """
         match_list = []
-        for match in self.__json:
+        for match in self.json:
             match_list.append(
                 Match(match["gameId"], match["summonerId"], match["gameTime"])
             )
@@ -125,7 +125,7 @@ class MatchHistory:
         return Champions(self.summoner_id, season)
 
     def __str__(self):
-        return json.dumps(self.__json, indent=4)
+        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
-        return json.dumps(self.__json, indent=4)
+        return f"MatchHistory - {self.summoner_id} - {self.gamemode} - {self.last_info}"
