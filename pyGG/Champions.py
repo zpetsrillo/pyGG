@@ -37,7 +37,7 @@ class Champions:
         res = requests.get(
             "https://na.op.gg/summoner/champions/ajax/champions.rank/", params=params
         )
-        df = pd.read_html(res.text)[0]
+        df = pd.read_html(res.text, flavor="lxml")[0]
         df = self.__clean_champions_table(df)
         return df
 
@@ -73,6 +73,9 @@ class Champions:
 
     def __load_df(self):
         return self.__load_champions(self.season)
+
+    def __len__(self):
+        return len(self.json)
 
     def __str__(self):
         return json.dumps(self.json, indent=4)

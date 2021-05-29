@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 
 from pyGG.MatchHistory import MatchHistory
-from pyGG.Match import Match
+from pyGG.Champions import Champions
 
 
 class Summoner:
@@ -34,6 +34,9 @@ class Summoner:
 
     def __get_rank(self):
         rank_info = self.soup.find(class_="TierRankInfo")
+        if "Unranked" in rank_info.text:
+            return None
+
         rank_type = rank_info.find(class_="RankType").text
         rank_tier = rank_info.find(class_="TierRank").text
         rank_lp = rank_info.find(class_="LeaguePoints").text.split()[0]
@@ -54,6 +57,9 @@ class Summoner:
 
     def __get_sub_rank(self):
         rank_info = self.soup.find(class_="sub-tier__info")
+        if "Unranked" in rank_info.text:
+            return None
+
         rank_type = rank_info.find(class_="sub-tier__rank-type").text
         rank_tier = rank_info.find(class_="sub-tier__rank-tier").text.strip()
         rank_lp, rank_win, rank_lose = rank_info.find(
@@ -77,6 +83,9 @@ class Summoner:
 
     def __get_past_rank(self):
         past_rank_list = self.soup.find(class_="PastRankList")
+        if past_rank_list is None:
+            return None
+
         past_rank_items = past_rank_list.find_all(class_="Item tip")
 
         past_leagues = [rank for rank in past_rank_list.text.split("\n") if rank != ""]
@@ -92,7 +101,11 @@ class Summoner:
         return int(level)
 
     def __get_ladder_rank(self):
-        ranking = self.soup.find(class_="ranking").text.strip().replace(",", "")
+        elem = self.soup.find(class_="ranking")
+        if elem is None:
+            return None
+
+        ranking = elem.text.strip().replace(",", "")
 
         return int(ranking)
 
@@ -107,7 +120,22 @@ class Summoner:
         }
 
     def get_match_history(self):
+        """
+        Returns MatchHistory object for summoner
+        """
         return MatchHistory(self.json["summoner-id"])
+
+    def get_champions(self, season=17):
+        """
+        Returns Champions object for summoner, optional season paramater
+        """
+        if (
+            season == 17
+            and self.json["rank-solo"] is None
+            and self.json["rank-flex"] is None
+        ):
+            raise Exception("No ranked data for current season")
+        return Champions(self.json["summoner-id"], season)
 
     def __str__(self):
         return json.dumps(self.json, indent=4)

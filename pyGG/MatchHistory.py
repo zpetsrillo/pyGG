@@ -4,7 +4,6 @@ import json
 import pandas as pd
 
 from pyGG.Match import Match
-from pyGG.Champions import Champions
 
 
 class MatchHistory:
@@ -61,14 +60,19 @@ class MatchHistory:
         res = requests.get(
             "https://na.op.gg/summoner/matches/ajax/averageAndList/", params=params
         )
+        if res.status_code == 418:
+            raise Exception("No results to load")
+
         as_json = json.loads(res.text)
-        self.last_info = as_json["lastInfo"]
+        self.__last_info = as_json["lastInfo"]
 
         soup = BeautifulSoup(as_json["html"], "lxml")
         return soup
 
     def __load_matches(self):
-        # TODO: handle no more matches to load
+        if self.soup.findAll(text="There are no results recorded."):
+            raise Exception("There are no results recorded.")
+
         match_history = []
         matches = self.soup.find_all(class_="GameItem")
         for match in matches:
@@ -76,8 +80,6 @@ class MatchHistory:
             summoner_id = match["data-summoner-id"]
             game_time = match["data-game-time"]
             game_result = match["data-game-result"]
-
-            # TODO: Add all readily available match data to output
 
             match_history.append(
                 {
@@ -105,6 +107,7 @@ class MatchHistory:
         """
         self.__load_data()
         self.__json += self.__load_matches()
+        self.__df = self.__load_df()
 
     def get_matches(self):
         """
@@ -118,14 +121,13 @@ class MatchHistory:
 
         return match_list
 
-    def get_champions(self, season=17):
-        """
-        Returns Champions object for summoner, optional season paramater
-        """
-        return Champions(self.summoner_id, season)
+    def __len__(self):
+        return len(self.json)
 
     def __str__(self):
         return json.dumps(self.json, indent=4)
 
     def __repr__(self):
-        return f"MatchHistory - {self.summoner_id} - {self.gamemode} - {self.last_info}"
+        return (
+            f"MatchHistory - {self.summoner_id} - {self.gamemode} - {self.__last_info}"
+        )

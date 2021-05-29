@@ -63,5 +63,8 @@ class Statistics:
     def __load_df(self):
         return self.__clean_data()
 
+    def __len__(self):
+        return len(self.json)
+
     def __str__(self):
         return json.dumps(self.json, indent=4)

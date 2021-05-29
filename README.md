@@ -50,6 +50,11 @@ if not called with summoner_id, it will be fetched on instantiation
 | summoner_name | plain text summoner name                      |
 | json          | json representaion of summoner's profile page |
 
+| Method              | Contents                  |
+| ------------------- | ------------------------- |
+| get_match_history() | MatchHistory for summoner |
+| get_champions()     | Champions for summoner    |
+
 ### MatchHistory
 
 Match history of summoner
@@ -76,11 +81,10 @@ gamemode
 | json        | json of header items for match history |
 | df          | df of header items for match history   |
 
-| Method          | Contents                                            |
-| --------------- | --------------------------------------------------- |
-| get_matches()   | list of Match itmems based on match history         |
-| get_champions() | Champions for summoner                              |
-| load_more()     | extend match history (typically load 20 more games) |
+| Method        | Contents                                            |
+| ------------- | --------------------------------------------------- |
+| get_matches() | list of Match itmems based on match history         |
+| load_more()   | extend match history (typically load 20 more games) |
 
 ### Match
 
