@@ -8,7 +8,7 @@ import json
 class Leaderboard:
     def __init__(self, page=1):
         self.__page = page
-        self.__soup = self.__load_leaderboard()
+        self.__soup = self.__load_data()
         self.__json = self.__load_json()
         self.__df = self.__load_df()
 
@@ -36,7 +36,7 @@ class Leaderboard:
             raise ValueError("Page must be non-negative")
         self.__page = value
 
-    def __load_leaderboard(self):
+    def __load_data(self):
         params = {"page": self.page}
 
         res = requests.get("https://na.op.gg/ranking/ladder/", params=params)
@@ -137,7 +137,10 @@ class Leaderboard:
         """
         Increment page number and load page (100 summoners per page)
         """
-        self.load_page(self.page + 1)
+        self.__page += 1
+        self.__soup = self.__load_data()
+        self.__json += self.__load_json()
+        self.__df = self.__load_df()
 
     def __len__(self):
         return len(self.json)

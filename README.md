@@ -94,13 +94,12 @@ Individual match
 Match(game_id, summoner_id, game_time)
 ```
 
-| Attribute   | Contents                                         |
-| ----------- | ------------------------------------------------ |
-| game_id     | match id as used by opgg                         |
-| summoner_id | summoner id as used by opgg                      |
-| game_time   | epoch timestamp of match                         |
-| players     | json of all player related information for match |
-| summary     | json of all team related information for match   |
+| Attribute   | Contents                          |
+| ----------- | --------------------------------- |
+| game_id     | match id as used by opgg          |
+| summoner_id | summoner id as used by opgg       |
+| game_time   | epoch timestamp of match          |
+| json        | json representation of match data |
 
 ### Champions
 

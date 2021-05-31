@@ -12,20 +12,28 @@ class TestOpgg(unittest.TestCase):
 
     def test_get_summoner(self):
         opgg = Summoner(self.summoner_name)
+        self.assertEqual(opgg.json["summoner-id"], self.summoner_id)
+
+    def test_get_match_history_from_summoner(self):
+        opgg = Summoner(self.summoner_name)
         self.assertIsInstance(opgg.get_match_history(), MatchHistory)
 
-    def test_show_more_matches_success(self):
-        mh = MatchHistory(self.summoner_id)
-        mh.load_more()
-        self.assertEqual(len(mh.json), 40)
-
-    # def test_show_more_matches_fail(self):
+    def test_get_champions_from_summoner(self):
+        opgg = Summoner(self.summoner_name)
+        self.assertIsInstance(opgg.get_champions(), Champions)
 
     def test_get_match_history(self):
         mh = MatchHistory(self.summoner_id)
-        self.assertEqual(len(mh.json), 20)
+        self.assertEqual(len(mh.json), 7)
 
-    # def test_get_full_match_history(self):
+    def test_show_more_matches_fail(self):
+        mh = MatchHistory(self.summoner_id)
+        self.assertRaises(Exception, mh.load_more)
+
+    def test_get_all_matches_from_match_history(self):
+        mh = MatchHistory(self.summoner_id)
+        match_list = mh.get_matches()
+        self.assertIsInstance(match_list[0], Match)
 
     def test_get_match_players(self):
         match = Match(self.match["matchId"], self.summoner_id, self.match["gameTime"])
@@ -53,22 +61,45 @@ class TestOpgg(unittest.TestCase):
             },
         )
 
-    # slow to execute
-    # def test_get_all_matches(self):
-    #     summoner = pyGG.Summoner(self.summoner_id)
-    #     match_list = summoner.get_matches()
-    #     self.assertIsInstance(match_list[0], pyGG.Match)
-
     def test_get_champions(self):
         champions = Champions(self.summoner_id).json
         self.assertEqual(champions["Vayne"]["Penta Kill"], 1)
+
+    def test_get_champions_season(self):
+        champions = Champions(self.summoner_id, 15).json
+        self.assertEqual(champions["Jinx"]["Gold"], 12070)
 
     def test_leaderboard(self):
         lb = Leaderboard()
         self.assertEqual(len(lb.json), 100)
 
+    def test_leaderboard_page(self):
+        lb = Leaderboard(2)
+        self.assertEqual(len(lb.json), 100)
+
+    def test_leaderboard_next_page(self):
+        lb = Leaderboard()
+        lb.next_page()
+        self.assertEqual(len(lb.json), 200)
+
+    def test_leaderboard_load_page(self):
+        lb = Leaderboard()
+        lb.load_page(5)
+        self.assertEqual(len(lb.json), 100)
+
     def test_statistics(self):
         stats = Statistics()
+        self.assertGreaterEqual(len(stats.json), 155)
+
+    def test_statistics_form(self):
+        form = {
+            "type": "win",
+            "league": "diamond",
+            "period": "week",
+            "mapId": 1,
+            "queue": "ranked",
+        }
+        stats = Statistics(form)
         self.assertGreaterEqual(len(stats.json), 155)
 
     def test_get_summoner_rank(self):
@@ -101,6 +132,11 @@ class TestOpgg(unittest.TestCase):
                 "winratio": 44,
             },
         )
+
+    def test_get_summoner_past_ranks(self):
+        opgg = Summoner(self.summoner_name)
+        past_ranks = opgg.json["past-rank"]
+        self.assertEqual(len(past_ranks), 6)
 
 
 if __name__ == "__main__":

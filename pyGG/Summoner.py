@@ -30,7 +30,7 @@ class Summoner:
     def __get_summoner_id(self):
         game_list = self.soup.find(class_="GameListContainer")
         summoner_id = game_list["data-summoner-id"]
-        return summoner_id
+        return int(summoner_id)
 
     def __get_rank(self):
         rank_info = self.soup.find(class_="TierRankInfo")
