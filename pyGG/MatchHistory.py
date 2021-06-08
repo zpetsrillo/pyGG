@@ -4,29 +4,28 @@ import json
 import pandas as pd
 
 from pyGG.Match import Match
+from pyGG.DataLoader import DataLoader
 
 
-class MatchHistory:
+class MatchHistory(DataLoader):
     def __init__(self, summoner_id, gamemode="soloranked"):
-        self.summoner_id = summoner_id
+        self.__summoner_id = summoner_id
         self.__gamemode = gamemode
         self.__last_info = 0
 
-        self.__soup = self.__load_data()
-        self.__json = self.__load_json()
-        self.__df = self.__load_df()
+        super().__init__()
 
     @property
-    def soup(self):
-        return self.__soup
+    def summoner_id(self):
+        return self.__summoner_id
 
-    @property
-    def json(self):
-        return self.__json
-
-    @property
-    def df(self):
-        return self.__df
+    @summoner_id.setter
+    def summoner_id(self, value):
+        if type(value) != int:
+            raise ValueError("summoner_id must be type integer")
+        if value < 0:
+            raise ValueError("summoner_id must be non-negative")
+        self.__init__(value, self.gamemode)
 
     @property
     def gamemode(self):
@@ -48,9 +47,9 @@ class MatchHistory:
         if value not in gamemodes:
             raise ValueError("Unsupported gamemode")
 
-        self.__gamemode = value
+        self.__init__(self.summoner_id, value)
 
-    def __load_data(self):
+    def _load_data(self):
         params = {
             "startInfo": self.__last_info,
             "summonerId": self.summoner_id,
@@ -92,12 +91,12 @@ class MatchHistory:
 
         return match_history
 
-    def __load_json(self):
+    def _load_json(self):
         return self.__load_matches()
 
-    def __load_df(self):
+    def _load_df(self):
         columns = ["gameId", "summonerId", "gameTime", "result"]
-        df = pd.DataFrame(self.__json, columns=columns)
+        df = pd.DataFrame(self.json, columns=columns)
         df["gameTime"] = pd.to_datetime(df["gameTime"], unit="s")
         return df
 
@@ -105,9 +104,9 @@ class MatchHistory:
         """
         Load more items into match_history
         """
-        self.__load_data()
-        self.__json += self.__load_matches()
-        self.__df = self.__load_df()
+        self._load_data()
+        self._json += self.__load_matches()
+        self._df = self._load_df()
 
     def get_matches(self):
         """
@@ -123,9 +122,6 @@ class MatchHistory:
 
     def __len__(self):
         return len(self.json)
-
-    def __str__(self):
-        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
         return (

@@ -2,27 +2,31 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
-import json
+
+from pyGG.DataLoader import DataLoader
 
 
-class Match:
+class Match(DataLoader):
     def __init__(self, game_id, summoner_id, game_time):
-        self.game_id = game_id
-        self.summoner_id = summoner_id
-        self.game_time = game_time
+        self.__game_id = game_id
+        self.__summoner_id = summoner_id
+        self.__game_time = game_time
 
-        self.__soup = self.__load_data()
-        self.__json = self.__load_json()
-
-    @property
-    def soup(self):
-        return self.__soup
+        super().__init__()
 
     @property
-    def json(self):
-        return self.__json
+    def game_id(self):
+        return self.__game_id
 
-    def __load_data(self):
+    @property
+    def summoner_id(self):
+        return self.__summoner_id
+
+    @property
+    def game_time(self):
+        return self.__game_time
+
+    def _load_data(self):
         params = {
             "gameId": self.game_id,
             "summonerId": self.summoner_id,
@@ -142,11 +146,8 @@ class Match:
 
         return {"win-team": win_team, "lose-team": lose_team}
 
-    def __load_json(self):
+    def _load_json(self):
         return {"summary": self.__get_summary(), "players": self.__get_players()}
-
-    def __str__(self):
-        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
         return f"Match - {self.game_id}"

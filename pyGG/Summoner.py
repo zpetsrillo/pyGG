@@ -1,27 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
-import json
 
 from pyGG.MatchHistory import MatchHistory
 from pyGG.Champions import Champions
+from pyGG.DataLoader import DataLoader
 
 
-class Summoner:
+class Summoner(DataLoader):
     def __init__(self, summoner_name):
-        self.summoner_name = summoner_name
+        self.__summoner_name = summoner_name
 
-        self.__soup = self.__load_data(self.summoner_name)
-        self.__json = self.__load_json()
-
-    @property
-    def soup(self):
-        return self.__soup
+        super().__init__()
 
     @property
-    def json(self):
-        return self.__json
+    def summoner_name(self):
+        return self.__summoner_name
 
-    def __load_data(self, summoner_name):
+    @summoner_name.setter
+    def summoner_name(self, value):
+        if type(value) != str:
+            raise ValueError("summoner_name must be type string")
+        self.__init__(value)
+
+    def _load_data(self):
         params = {"userName": self.summoner_name}
         res = requests.get(f"https://na.op.gg/summoner/", params=params)
         soup = BeautifulSoup(res.text, "lxml")
@@ -109,7 +110,7 @@ class Summoner:
 
         return int(ranking)
 
-    def __load_json(self):
+    def _load_json(self):
         return {
             "summoner-id": self.__get_summoner_id(),
             "level": self.__get_level(),
@@ -136,9 +137,6 @@ class Summoner:
         ):
             raise Exception("No ranked data for current season")
         return Champions(self.json["summoner-id"], season)
-
-    def __str__(self):
-        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
         return f'Summoner - {self.json["summoner-id"]}'

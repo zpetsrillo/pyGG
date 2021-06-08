@@ -4,25 +4,14 @@ from bs4 import BeautifulSoup
 import re
 import json
 
+from pyGG.DataLoader import DataLoader
 
-class Leaderboard:
+
+class Leaderboard(DataLoader):
     def __init__(self, page=1):
         self.__page = page
-        self.__soup = self.__load_data()
-        self.__json = self.__load_json()
-        self.__df = self.__load_df()
 
-    @property
-    def soup(self):
-        return self.__soup
-
-    @property
-    def json(self):
-        return self.__json
-
-    @property
-    def df(self):
-        return self.__df
+        super().__init__()
 
     @property
     def page(self):
@@ -36,7 +25,7 @@ class Leaderboard:
             raise ValueError("Page must be non-negative")
         self.__page = value
 
-    def __load_data(self):
+    def _load_data(self):
         params = {"page": self.page}
 
         res = requests.get("https://na.op.gg/ranking/ladder/", params=params)
@@ -121,10 +110,10 @@ class Leaderboard:
 
         return output
 
-    def __load_json(self):
+    def _load_json(self):
         return self.__clean_leaderboard()
 
-    def __load_df(self):
+    def _load_df(self):
         return pd.DataFrame(self.json).set_index("rank")
 
     def load_page(self, page):
@@ -138,9 +127,9 @@ class Leaderboard:
         Increment page number and load page (100 summoners per page)
         """
         self.__page += 1
-        self.__soup = self.__load_data()
-        self.__json += self.__load_json()
-        self.__df = self.__load_df()
+        self._soup = self._load_data()
+        self._json += self._load_json()
+        self._df = self._load_df()
 
     def __len__(self):
         return len(self.json)

@@ -1,23 +1,31 @@
 import pandas as pd
 import requests
 import re
-import json
+
+from pyGG.DataLoader import DataLoader
 
 
-class Champions:
+class Champions(DataLoader):
     def __init__(self, summoner_id, season=17):
-        self.summoner_id = summoner_id
+        self.__summoner_id = summoner_id
         self.__season = season
-        self.__df = self.__load_df()
-        self.__json = self.__load_json()
+
+        # Data loaded out of usual order (df before json)
+        self._df = self._load_df()
+
+        super().__init__()
 
     @property
-    def json(self):
-        return self.__json
+    def summoner_id(self):
+        return self.__summoner_id
 
-    @property
-    def df(self):
-        return self.__df
+    @summoner_id.setter
+    def summoner_id(self, value):
+        if type(value) != int:
+            raise ValueError("summoner_id must be type integer")
+        if value < 0:
+            raise ValueError("summoner_id must be non-negative")
+        self.__init__(value, self.season)
 
     @property
     def season(self):
@@ -26,10 +34,10 @@ class Champions:
     @season.setter
     def season(self, value):
         if type(value) != int:
-            raise ValueError("Page must be type integer")
+            raise ValueError("season must be type integer")
         if value < 0:
-            raise ValueError("Page must be non-negative")
-        self.__season = value
+            raise ValueError("season must be non-negative")
+        self.__init__(self.summoner_id, value)
 
     def __load_champions(self, season):
         params = {"summonerId": self.summoner_id, "season": season}
@@ -68,17 +76,14 @@ class Champions:
 
         return df.apply(pd.to_numeric)
 
-    def __load_json(self):
+    def _load_json(self):
         return self.df.T.to_dict()
 
-    def __load_df(self):
+    def _load_df(self):
         return self.__load_champions(self.season)
 
     def __len__(self):
         return len(self.json)
-
-    def __str__(self):
-        return json.dumps(self.json, indent=4)
 
     def __repr__(self):
         return f"Champions - {self.summoner_id} - {self.season}"

@@ -1,13 +1,14 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import json
+
+from pyGG.DataLoader import DataLoader
 
 
-class Statistics:
+class Statistics(DataLoader):
     def __init__(self, form=None):
         if form is None:
-            self.__form = {
+            form = {
                 "type": "win",
                 "league": "",
                 "period": "month",
@@ -15,25 +16,28 @@ class Statistics:
                 "queue": "ranked",
             }
         else:
-            self.__form = form
+            keys = {"type", "league", "period", "mapId", "queue"}
+            if not keys.issubset(set(form.keys())):
+                raise ValueError("form missing nessecary values")
 
-        self.__soup = self.__load_data(self.__form)
-        self.__df = self.__load_df()
-        self.__json = self.__load_json()
+        self.__form = form
 
-    @property
-    def soup(self):
-        return self.__soup
+        # Data loaded out of usual order (df before json)
+        self._soup = self._load_data()
+        self._df = self._load_df()
 
-    @property
-    def json(self):
-        return self.__json
+        super().__init__()
 
     @property
-    def df(self):
-        return self.__df
+    def form(self):
+        return self.__form
 
-    def __load_data(self, form):
+    @form.setter
+    def form(self, value):
+        self.__init__(value)
+
+    def _load_data(self):
+        form = self.__form
 
         if form == None:
             form = {
@@ -57,14 +61,11 @@ class Statistics:
         df.set_index("#", inplace=True)
         return df
 
-    def __load_json(self):
+    def _load_json(self):
         return self.df.set_index("Champion").T.to_dict()
 
-    def __load_df(self):
+    def _load_df(self):
         return self.__clean_data()
 
     def __len__(self):
         return len(self.json)
-
-    def __str__(self):
-        return json.dumps(self.json, indent=4)

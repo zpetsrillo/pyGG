@@ -24,7 +24,7 @@ class TestOpgg(unittest.TestCase):
 
     def test_get_match_history(self):
         mh = MatchHistory(self.summoner_id)
-        self.assertEqual(len(mh.json), 7)
+        self.assertEqual(len(mh.json), 1)
 
     def test_show_more_matches_fail(self):
         mh = MatchHistory(self.summoner_id)
